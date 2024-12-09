@@ -1,0 +1,27 @@
+# Virtual environment directory
+venv/
+
+# Python bytecode
+*.pyc
+__pycache__/
+
+# SQLite database file
+*.sqlite3
+
+# MacOS system files
+.DS_Store
+
+# Logs
+*.log
+
+# IDEs and editors
+.vscode/
+.idea/
+
+# Environment variables file (if exists)
+.env
+
+# Other system-specific files
+*.bak
+*.swp
+
