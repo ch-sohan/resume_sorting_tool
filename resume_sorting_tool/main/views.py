@@ -8,7 +8,9 @@ from PyPDF2 import PdfReader
 from docx import Document
 import spacy
 import google.generativeai as genai
-import os
+from django.conf import settings
+from collections import Counter
+import datetime
 
 
 #Mongodb connection
@@ -104,7 +106,9 @@ def call_gemini_api(resume_text):
     - Education
     - Work Experience
     - Certifications
-    (Note:  Please give me response in plain text)
+    - Number of Years of Experience
+
+    (Note:  Please give me response in plain text and list all the skills seperated by commas No sub categories are needed in Skills)
     Resume Text:
     {resume_text}
 
@@ -126,59 +130,47 @@ def call_gemini_api(resume_text):
 
     return structured_data
 
-
-def parse_response(response_text):
-    # Function to parse and structure the response from the LLM
-    data = {
-        'personal_details': {
-            'name': '',
-            'email': '',
-            'phone': '',
-            'address': ''
-        },
-        'skills': [],
-        'education': '',
-        'work_experience': [],
-        'certifications': [],
-    }
-
-    # Split the response into lines or use regular expressions to categorize the data
-    lines = response_text.split("\n")
-    
-    # Example parsing logic
-    for line in lines:
-        if "Name:" in line:
-            data['personal_details']['name'] = line.replace("Name:", "").strip()
-        elif "Email:" in line:
-            data['personal_details']['email'] = line.replace("Email:", "").strip()
-        elif "Phone:" in line:
-            data['personal_details']['phone'] = line.replace("Phone:", "").strip()
-        elif "Address:" in line:
-            data['personal_details']['address'] = line.replace("Address:", "").strip()
-        elif "Skills:" in line:
-            skills = line.replace("Skills:", "").strip()
-            data['skills'] = [skill.strip() for skill in skills.split(',')] if skills else []
-        elif "Education:" in line:
-            data['education'] = line.replace("Education:", "").strip()
-        elif "Work Experience:" in line:
-            work_exp = line.replace("Work Experience:", "").strip()
-            if work_exp:
-                data['work_experience'].append(work_exp)
-        elif "Certifications:" in line:
-            certs = line.replace("Certifications:", "").strip()
-            data['certifications'] = [cert.strip() for cert in certs.split(',')] if certs else []
-
-    return data
-
 # Resume Upload Page
 def upload_resume(request):
     return render(request, 'main/upload.html')
 
 # Admin Dashboard
 def admin_dashboard(request):
-    resumes = collection.find()
-    return render(request, 'main/admin_dashboard.html', {'resumes': resumes})
+    #resume_collection = settings.collection
+    #resumes = list(resume_collection.find({})) 
+    resumes = list(collection.find())
+    #return render(request, 'main/admin_dashboard.html', {'resumes': resumes})
+    total_resumes = len(resumes)
 
+    # Calculate the most common skill (Skill Count)
+    skill_counts = Counter()
+    for resume in resumes:
+        skills = resume.get('skills', [])
+        for skill in skills:
+            skill_counts[skill] += 1
+
+    # Calculate most common skill
+    most_common_skill = skill_counts.most_common(1)
+    most_common_skill = most_common_skill[0][0] if most_common_skill else "N/A"
+
+    # Calculate average experience (based on work experience length in years)
+    total_experience = 0
+    for resume in resumes:
+        years_of_experience = resume.get('years_of_experience', '')
+        total_experience += int(years_of_experience)  # Assuming each experience is 1 year
+
+    avg_experience = total_experience / total_resumes if total_resumes else 0
+
+    # Pass data to the template
+    context = {
+        'total_resumes': total_resumes,
+        'most_common_skill': most_common_skill,
+        'avg_experience': avg_experience,
+        'resumes': resumes,
+        'skill_counts': skill_counts,
+    }
+
+    return render(request, 'main/admin_dashboard.html', context)
 
 
 def updated_parse_response(response_text):
@@ -194,7 +186,12 @@ def updated_parse_response(response_text):
         'education': '',
         'work_experience': [],
         'certifications': [],
+        'years_of_experience': '',
+        'uploaded_date': '',
     }
+
+    current_date = datetime.datetime.now().strftime('%Y-%m-%d')  # Example: '2024-12-12'
+    data['uploaded_date'] = current_date
 
     # Split the response into lines and iterate over them
     lines = response_text.split("\n")
@@ -214,12 +211,19 @@ def updated_parse_response(response_text):
             current_section = "personal_details"
         elif line.startswith("Skills:"):
             current_section = "skills"
+            # Split the skills by comma and store them as a list
+            skills_str = line.replace("Skills:", "").strip()
+            skills = [skill.strip() for skill in skills_str.split(",")]  # Split and strip each skill
+            data['skills'].extend(skills)  # Add skills to the list
         elif line.startswith("Education:"):
             current_section = "education"
         elif line.startswith("Work Experience:"):
             current_section = "work_experience"
         elif line.startswith("Certifications:"):
             current_section = "certifications"
+        elif line.startswith("Number of Years of Experience:"):
+            current_section = "years_of_experience"
+            data['years_of_experience'] = line.replace("Number of Years of Experience:", "").strip()
         
         # Parse Personal Details
         elif current_section == "personal_details":
@@ -232,32 +236,18 @@ def updated_parse_response(response_text):
             elif line.startswith("Address:"):
                 data['personal_details']['address'] = line.replace("Address:", "").strip()
         
-        # Parse Skills
-        elif current_section == "skills":
-            if line.startswith("Programming Languages:"):
-                data['skills'].append("Programming Languages: " + line.replace("Programming Languages:", "").strip())
-            elif line.startswith("Web Development:"):
-                data['skills'].append("Web Development: " + line.replace("Web Development:", "").strip())
-            elif line.startswith("Database Management:"):
-                data['skills'].append("Database Management: " + line.replace("Database Management:", "").strip())
-            elif line.startswith("Tools:"):
-                data['skills'].append("Tools: " + line.replace("Tools:", "").strip())
-            elif line.startswith("Cloud Platforms:"):
-                data['skills'].append("Cloud Platforms: " + line.replace("Cloud Platforms:", "").strip())
-        
         # Parse Education
         elif current_section == "education":
             data['education'] = line.replace("Bachelor of Science in Computer Science:", "").strip()
 
         # Parse Work Experience
         elif current_section == "work_experience":
-            if line.startswith("Software Engineer"):
-                data['work_experience'].append(line.strip())
-            elif line.startswith("Intern - Software Developer"):
-                data['work_experience'].append(line.strip())
+            data['work_experience'].append(line.strip())  # Store each line as an individual item in the list
+        
         
         # Parse Certifications
         elif current_section == "certifications":
             data['certifications'].append(line.strip())
     
     return data
+

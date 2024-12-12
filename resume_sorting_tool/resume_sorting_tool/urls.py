@@ -23,6 +23,6 @@ urlpatterns = [
     path('', views.upload_resume, name='home'),  # Redirect root URL to upload page
     path('upload', views.upload_resume, name='upload'),
     path('process_resume', views.process_resume, name='process_resume'),
-    path('admin_dashboard', views.admin_dashboard, name='admin_dashboard'),
+    path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
 ]
 

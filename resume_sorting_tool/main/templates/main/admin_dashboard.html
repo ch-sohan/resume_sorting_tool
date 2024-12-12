@@ -1,32 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
-    <div class="container mt-5">
-        <h2>Admin Dashboard</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Skills</th>
-                    <th>Experience</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for resume in resumes %}
-                    <tr>
-                        <td>{{ resume.name }}</td>
-                        <td>{{ resume.email }}</td>
-                        <td>{{ resume.skills }}</td>
-                        <td>{{ resume.experience }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<div class="container mt-4">
+    <h1>Admin Dashboard</h1>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Total Resumes</h5>
+                    <h2>{{ total_resumes }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Most Common Skill</h5>
+                    <h2>{{ most_common_skill }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Average Experience</h5>
+                    <h2>{{ avg_experience }} years</h2>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Skill Distribution Chart -->
+    <canvas id="skillsChart" width="400" height="200"></canvas>
+
+    <!-- Table -->
+    <table id="resumesTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Skills</th>
+                <th>Experience</th>
+                <th>Education</th>
+                <th>Certifications</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for resume in resumes %}
+            <tr>
+                <td>{{ resume.personal_details.name }}</td>
+                <td>{{ resume.skills|join:", " }}</td>
+                <td>{{ resume.years_of_experience }} years</td>
+                <td>{{ resume.education }}</td>
+                <td>{{ resume.certifications|join:", " }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Skill Distribution Chart
+    const ctx = document.getElementById('skillsChart').getContext('2d');
+    const skillCounts = JSON.parse('{{ skill_counts|safe }}');
+    const labels = Object.keys(skillCounts);
+    const data = Object.values(skillCounts);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Skill Distribution',
+                data: data,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // DataTable Initialization
+    $(document).ready(function() {
+        $('#resumesTable').DataTable();
+    });
+</script>
 </body>
 </html>
