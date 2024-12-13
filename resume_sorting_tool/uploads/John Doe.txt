@@ -1,0 +1,40 @@
+John Doe
+1234 Elm Street, Apt 56
+Springfield, IL, 62704
+Email: john.doe@example.com
+Phone: (555) 123-4567
+
+Professional Summary
+A dedicated software engineer with 5 years of experience in developing scalable web applications and machine learning models. Proficient in Python, JavaScript, and cloud technologies.
+
+Skills
+
+Programming Languages: Python, JavaScript, Java
+Web Development: HTML, CSS, React, Django
+Database Management: MySQL, MongoDB
+Tools: Docker, Kubernetes, Git, Jenkins
+Cloud Platforms: AWS, Azure
+Education
+
+Bachelor of Science in Computer Science
+University of Illinois Urbana-Champaign, IL
+Graduation Year: 2018
+Work Experience
+
+Software Engineer
+TechCorp Solutions, Springfield, IL
+July 2018 – Present
+
+Designed and implemented REST APIs for e-commerce platforms.
+Deployed scalable applications on AWS using Docker and Kubernetes.
+Developed machine learning models for predictive analytics.
+Intern - Software Developer
+InnovateTech Inc., Chicago, IL
+May 2017 – August 2017
+
+Assisted in developing a CRM platform using Django and React.
+Created automated scripts for data migration to MongoDB.
+Certifications
+
+AWS Certified Solutions Architect
+Certified Kubernetes Administrator (CKA)

@@ -74,7 +74,8 @@ def extract_info(resume_text):
 @csrf_exempt
 def process_resume(request):
     if request.method == 'POST':
-        file = request.FILES['resume']
+        job_role = request.POST.get('jobRole')
+        file = request.FILES.get('resume')
         save_path = os.path.join('uploads', file.name)
         with open(save_path, 'wb') as f:
             for chunk in file.chunks():
@@ -85,6 +86,8 @@ def process_resume(request):
             resume_text = parse_resume(save_path)
             extracted_data = extract_info(resume_text)
             structured_data = call_gemini_api(resume_text)
+            structured_data['jobRole'] = job_role
+            structured_data['filename'] = file.name
 
             # Save to MongoDB
             collection.insert_one(structured_data)
@@ -136,10 +139,7 @@ def upload_resume(request):
 
 # Admin Dashboard
 def admin_dashboard(request):
-    #resume_collection = settings.collection
-    #resumes = list(resume_collection.find({})) 
     resumes = list(collection.find())
-    #return render(request, 'main/admin_dashboard.html', {'resumes': resumes})
     total_resumes = len(resumes)
 
     # Calculate the most common skill (Skill Count)

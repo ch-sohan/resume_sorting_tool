@@ -1,0 +1,41 @@
+Ethan Taylor
+3456 Redwood Boulevard, Apt 210
+Seattle, WA, 98101
+Email: ethan.taylor@example.com
+Phone: (555) 123-9876
+
+Professional Summary
+A highly skilled cybersecurity analyst with 3 years of experience protecting corporate data and networks. Expertise in penetration testing, vulnerability assessments, and threat mitigation.
+
+Skills
+
+Cybersecurity Tools: Kali Linux, Metasploit, Wireshark
+Networking: TCP/IP, DNS, VPN, Firewalls
+Penetration Testing: Burp Suite, Nessus, Nikto
+Programming: Python, Bash, PowerShell
+Cloud Security: AWS, Azure
+Other: Risk Assessment, Incident Response, Security Auditing
+Education
+Bachelor of Science in Cybersecurity
+University of Washington, Seattle, WA
+Graduation Year: 2019
+
+Work Experience
+
+Cybersecurity Analyst
+SecureTech Solutions, Seattle, WA
+August 2019 – Present
+
+Conducted vulnerability assessments and penetration testing on corporate networks.
+Developed and implemented security protocols to mitigate external and internal threats.
+Responded to security incidents and provided solutions for risk mitigation.
+IT Security Intern
+SafeNet Technologies, Seattle, WA
+June 2018 – August 2018
+
+Assisted in monitoring network traffic for suspicious activity.
+Developed scripts to automate security testing and reporting.
+Certifications
+
+Certified Ethical Hacker (CEH)
+CompTIA Security+
