@@ -1,0 +1,41 @@
+Michael Brown
+9876 Pine Street, Apt 3
+Los Angeles, CA, 90015
+Email: michael.brown@example.com
+Phone: (555) 654-3210
+
+Professional Summary
+Experienced DevOps engineer with 6 years of expertise in automating cloud infrastructure, deploying CI/CD pipelines, and managing microservices. Proficient in AWS, Terraform, and Jenkins.
+
+Skills
+
+DevOps Tools: Jenkins, Terraform, Ansible
+Cloud Platforms: AWS, Azure
+Containerization: Docker, Kubernetes
+Version Control: Git, GitLab
+Scripting Languages: Bash, Python
+Education
+Bachelor of Science in Information Technology
+California State University, Los Angeles, CA
+Graduation Year: 2017
+
+Work Experience
+
+DevOps Engineer
+CloudTech Solutions, Los Angeles, CA
+March 2018 – Present
+
+Designed and implemented automated deployment pipelines using Jenkins and Terraform.
+Managed and monitored AWS cloud infrastructure for several projects.
+Optimized the CI/CD process, reducing deployment times by 30%.
+System Administrator
+TechWorks, Los Angeles, CA
+June 2017 – February 2018
+
+Configured and maintained servers for internal applications and external clients.
+Set up Kubernetes clusters to streamline containerized application deployment.
+Managed cloud-based storage and backup systems.
+Certifications
+
+AWS Certified DevOps Engineer
+Certified Kubernetes Administrator

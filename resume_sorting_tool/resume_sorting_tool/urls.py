@@ -22,9 +22,12 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.upload_resume, name='home'),  # Redirect root URL to upload page
-    path('upload', views.upload_resume, name='upload'),
+    path('upload/', views.upload_resume, name='upload'),
     path('process_resume', views.process_resume, name='process_resume'),
     path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('',views.SignupPage,name='signup'),
+    path('login/',views.LoginPage,name='login'),
+    path('home/',views.HomePage,name='home'),
+    path('logout/',views.LogoutPage,name='logout'),
 ]+ static('/uploads/', document_root=settings.MEDIA_ROOT)
 

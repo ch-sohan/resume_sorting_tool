@@ -11,7 +11,57 @@ import google.generativeai as genai
 from django.conf import settings
 from collections import Counter
 import datetime
+from django.shortcuts import render,HttpResponse,redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.decorators import login_required
 
+# Create your views here.
+@login_required(login_url='login')
+def HomePage(request):
+    resumes = list(collection.find())
+    filtered_resumes = [resume for resume in resumes if resume.get('username') == request.user.username]
+    context = {
+        'resumes': filtered_resumes,
+        'username':request.user.username,
+    }
+    #print("Resumes fetched from database:", resumes)
+    return render (request,'main/home.html',context)
+
+def SignupPage(request):
+    if request.method=='POST':
+        uname=request.POST.get('username')
+        email=request.POST.get('email')
+        pass1=request.POST.get('password1')
+        pass2=request.POST.get('password2')
+
+        if pass1!=pass2:
+            return HttpResponse("Your password and confrom password are not Same!!")
+        else:
+            if User.objects.filter(username=uname).exists():
+                return HttpResponse("User already exists!")
+            my_user=User.objects.create_user(uname,email,pass1)
+            my_user.save()
+            return redirect('login')
+
+    return render (request,'main/signup.html')
+
+def LoginPage(request):
+    if request.method=='POST':
+        username=request.POST.get('username')
+        pass1=request.POST.get('pass')
+        user=authenticate(request,username=username,password=pass1)
+        if user is not None:
+            login(request,user)
+            return redirect('home')
+        else:
+            return HttpResponse ("Username or Password is incorrect!!!")
+
+    return render (request,'main/login.html')
+
+def LogoutPage(request):
+    logout(request)
+    return redirect('login')
 
 #Mongodb connection
 uri = "mongodb+srv://chsohan:X98eXVYMo7hAb2Fy@cluster0.kpff4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -88,6 +138,7 @@ def process_resume(request):
             structured_data = call_gemini_api(resume_text)
             structured_data['jobRole'] = job_role
             structured_data['filename'] = file.name
+            structured_data['username'] = request.user.username
 
             # Save to MongoDB
             collection.insert_one(structured_data)
