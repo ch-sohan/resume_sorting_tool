@@ -1,0 +1,41 @@
+David Williams
+7890 Birchwood Lane, Apt 15
+Austin, TX, 73301
+Email: david.williams@example.com
+Phone: (555) 246-8109
+
+Professional Summary
+An experienced software developer with a focus on backend development and cloud computing. Skilled in building RESTful services, working with microservices architecture, and leveraging cloud platforms for scalable solutions.
+
+Skills
+
+Programming Languages: Java, C++, Python
+Web Development: Spring Boot, Flask, Django
+Database Management: Oracle, MySQL, MongoDB
+Cloud Platforms: AWS, Google Cloud Platform
+Tools: Docker, Kubernetes, Jenkins, Git
+Other: Microservices, REST APIs, CI/CD
+Education
+Bachelor of Science in Computer Engineering
+University of Texas at Austin, TX
+Graduation Year: 2017
+
+Work Experience
+
+Senior Software Developer
+CloudSoft Technologies, Austin, TX
+August 2018 – Present
+
+Developed backend services using Spring Boot and Flask for various client projects.
+Designed and deployed microservices on AWS, improving system scalability.
+Led the migration of legacy systems to cloud infrastructure, optimizing performance and reducing costs.
+Software Developer Intern
+TechSavvy Solutions, Austin, TX
+May 2017 – August 2017
+
+Assisted in the development of backend APIs for e-commerce platforms.
+Wrote and tested SQL queries for data retrieval and storage.
+Certifications
+
+AWS Certified Solutions Architect
+Oracle Certified Java Programmer

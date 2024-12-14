@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Upload</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        body {
+            background-color: #ffffff; /* Dark Background */
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+            background: linear-gradient(135deg, #36010e, #010044); /* Dark Purple to Dark Pink */
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+            animation: slideIn 1s ease-in-out;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 32px;
+            color: #fff;
+        }
+
+        .alert {
+            display: none;
+        }
+
+        /* Form Styles */
+        .form-label {
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .form-select, .form-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: #640a8d; /* Dark Purple Focus Border */
+            box-shadow: 0 0 5px rgba(54, 1, 12, 0.8);
+        }
+
+        /* Button Styles */
+        .btn {
+            width: 100%;
+            background-color: #000000; /* Dark Purple */
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #ca0068; /* Dark Pink Hover */
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Link Styles */
+        p {
+            text-align: center;
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        p a {
+            color: #6a1e9c; /* Dark Purple */
+            font-weight: bold;
+        }
+
+        p a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Your Resume</h1>
+
+        <!-- Notification Area -->
+        <div id="notification" class="alert alert-success d-none" role="alert">
+            Your resume has been submitted successfully!
+        </div>
+        <div id="warning" class="alert alert-warning d-none" role="alert">
+            There are too few job roles available. Please add more.
+        </div>
+
+        <form id="uploadForm" action="#" method="POST" enctype="multipart/form-data" onsubmit="handleSubmit(event)">
+            <!-- Resume File Upload -->
+            <div class="mb-3">
+                <label for="resumeFile" class="form-label">Choose Resume (PDF, DOCX, TXT)</label>
+                <input type="file" class="form-control" id="resumeFile" name="resumeFile" required>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Handle form submission and redirect to dashboard.html
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
+            // Simulate form submission (e.g., saving to database, etc.)
+            // You can replace this with actual submission logic
+
+            // Show success notification
+            document.getElementById('notification').classList.remove('d-none');
+
+            // Redirect to dashboard.html after a delay to show the notification
+            setTimeout(function() {
+                window.location.href = "dashboard.html"; // Redirect to the dashboard page
+            }, 2000); // Delay the redirect by 2 seconds to allow user to see the success message
+        }
+    </script>
+</body>
+</html>

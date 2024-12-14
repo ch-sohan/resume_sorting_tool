@@ -1,0 +1,41 @@
+Alice Johnson
+4321 Maple Avenue, Apt 78
+Madison, WI, 53703
+Email: alice.johnson@example.com
+Phone: (555) 321-7654
+
+Professional Summary
+A results-oriented web developer with 3 years of experience in front-end and back-end development. Strong expertise in JavaScript, Node.js, and web frameworks like Angular and Express.
+
+Skills
+
+Programming Languages: JavaScript, HTML, CSS, TypeScript
+Web Development: Angular, React, Node.js, Express
+Database Management: MongoDB, PostgreSQL
+Version Control: Git, GitHub
+Cloud Platforms: Heroku, Google Cloud Platform (GCP)
+Other: RESTful APIs, GraphQL, Docker
+Education
+Bachelor of Science in Software Engineering
+University of Wisconsin-Madison, WI
+Graduation Year: 2020
+
+Work Experience
+
+Full Stack Developer
+WebTech Innovations, Madison, WI
+August 2020 – Present
+
+Developed and maintained web applications using React for front-end and Node.js for back-end.
+Integrated with cloud-based databases such as MongoDB and PostgreSQL.
+Improved application performance and optimized web pages for faster loading times.
+Web Developer Intern
+TechSolutions, Madison, WI
+May 2019 – August 2019
+
+Assisted in creating interactive user interfaces using Angular and React.
+Contributed to the development of REST APIs to support web applications.
+Certifications
+
+MongoDB Certified Developer
+Google Cloud Certified – Associate Cloud Engineer

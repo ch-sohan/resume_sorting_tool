@@ -1,0 +1,41 @@
+Jane Smith
+5678 Oak Road, Apt 102
+Chicago, IL, 60614
+Email: jane.smith@example.com
+Phone: (555) 987-6543
+
+Professional Summary
+A skilled data scientist with 4 years of experience in machine learning, data analysis, and statistical modeling. Experienced in working with large datasets and using Python, R, and SQL for data processing and analysis.
+
+Skills
+
+Programming Languages: Python, R, SQL
+Data Analysis: Pandas, NumPy, SciPy
+Machine Learning: Scikit-learn, TensorFlow, Keras
+Data Visualization: Matplotlib, Seaborn, Tableau
+Database Management: PostgreSQL, SQL Server
+Tools: Jupyter, Git, Docker
+Education
+Master of Science in Data Science
+University of Chicago, IL
+Graduation Year: 2019
+
+Work Experience
+
+Data Scientist
+Insight Analytics, Chicago, IL
+March 2020 – Present
+
+Built predictive models for customer behavior analysis.
+Developed algorithms to analyze large datasets and deliver actionable insights.
+Worked on SQL-based queries for data extraction and transformation.
+Data Analyst Intern
+Data Solutions, Chicago, IL
+June 2018 – August 2018
+
+Analyzed data from customer surveys to identify trends and patterns.
+Developed visual reports and dashboards for management using Tableau.
+Certifications
+
+Google Professional Data Engineer
+AWS Certified Machine Learning – Specialty
