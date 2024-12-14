@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        
+
+        body {
+            /*background-image: url('https://t3.ftcdn.net/jpg/01/03/02/80/360_F_103028005_QClGAJ0pdaS9xINIYccragSpkQUY1emI.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed; /* Make sure the background stays fixed when scrolling */
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        /* Sidebar Styles */
+        .filter-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #ffffff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease;
+            transform: translateX(-250px); /* Hide by default */
+            overflow-y: auto;
+        }
+
+        .filter-sidebar.show {
+            transform: translateX(0);
+        }
+
+        .filter-sidebar h5 {
+            margin-bottom: 15px;
+        }
+
+        .filter-sidebar form {
+            padding-bottom: 40px; 
+        }
+
+        /* Content Area */
+        .content-area {
+            margin-left: 280px;
+        }
+
+        .resume-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .resume-header h3 {
+            display: inline-block;
+        }
+
+        .resume-icons {
+            float: right;
+            font-size: 1.5rem;
+        }
+
+        .resume-icons .icon {
+            margin-left: 15px;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        .resume-icons .icon:hover {
+            color: #0056b3;
+        }
+
+        .resume-icons .btn {
+            background: transparent;
+            border: none;
+        }
+
+        /* Optionally, remove the outline (focus ring) when focused */
+        .resume-icons .btn:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* Sort Dropdown */
+        .sort-dropdown {
+            float: right;
+        }
+
+        /* Heading */
+        .heading {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Filter Category */
+        .filter-category {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Filter Sidebar -->
+    <div id="filterSidebar" class="filter-sidebar">
+        <h5>Filters</h5>
+        <button id="closeFilter" class="btn btn-sm btn-danger mb-3">Close Filters</button>
+        <!-- Filters -->
+        <form>
+            <!-- Job Role Filter -->
+            <div class="filter-category">
+                <label for="roleFilter" class="form-label">Job Role</label>
+                <select class="form-select" id="roleFilter">
+                    <option>Software Development</option>
+                    <option>Systems and Network</option>
+                    <option>Data</option>
+                    <option>AI/ML and Data Science</option>
+                    <option>Cybersecurity</option>
+                    <option>Quality Assurance</option>
+                    <option>DevOps and Infrastructure</option>
+                    <option>Project Management</option>
+                    <option>UI/UX and Design</option>
+                </select>
+            </div>
+
+            <!-- Experience Level Filter -->
+            <div class="filter-category">
+                <label for="experienceFilter" class="form-label">Experience Level</label>
+                <select class="form-select" id="experienceFilter">
+                    <option>Entry-Level</option>
+                    <option>Mid-Level</option>
+                    <option>Senior-Level</option>
+                    <option>Lead/Management</option>
+                </select>
+            </div>
+
+            <!-- Technical Skills Filter -->
+            <div class="filter-category">
+                <label for="skillsFilter" class="form-label">Technical Skills</label>
+                <select class="form-select" id="skillsFilter">
+                    <option>Programming Languages</option>
+                    <option>Web Technologies</option>
+                    <option>Mobile Development</option>
+                    <option>Database Technologies</option>
+                    <option>Cloud Computing</option>
+                    <option>DevOps Tools</option>
+                    <option>Machine Learning/AI</option>
+                    <option>Cybersecurity Tools</option>
+                    <option>Testing Tools</option>
+                    <option>Project Management Tools</option>
+                </select>
+            </div>
+
+            <!-- Education Filter -->
+            <div class="filter-category">
+                <label for="educationFilter" class="form-label">Education</label>
+                <select class="form-select" id="educationFilter">
+                    <option>Degree</option>
+                    <option>Field of Study</option>
+                    <option>Certifications</option>
+                </select>
+            </div>
+
+            <!-- Industry Domain Expertise Filter -->
+            <div class="filter-category">
+                <label for="industryFilter" class="form-label">Industry Domain Expertise</label>
+                <select class="form-select" id="industryFilter">
+                    <option>Software Development</option>
+                    <option>Cloud Computing</option>
+                    <option>Cybersecurity</option>
+                    <option>Data Science/AI/ML</option>
+                    <option>Fintech</option>
+                    <option>E-commerce</option>
+                    <option>Healthcare IT</option>
+                    <option>Telecommunications</option>
+                </select>
+            </div>
+
+            <!-- Employment Type Filter -->
+            <div class="filter-category">
+                <label for="employmentFilter" class="form-label">Employment Type</label>
+                <select class="form-select" id="employmentFilter">
+                    <option>Full-time</option>
+                    <option>Part-time</option>
+                    <option>Freelance/Contract</option>
+                    <option>Internship</option>
+                </select>
+            </div>
+
+            <!-- Geographic Location Filter -->
+            <div class="filter-category">
+                <label for="locationFilter" class="form-label">Geographic Location</label>
+                <select class="form-select" id="locationFilter">
+                    <option>Location Preferences</option>
+                    <option>Availability</option>
+                </select>
+            </div>
+
+            <!-- Apply Filter Button -->
+            <div class="mt-3">
+                <button type="button" id="applyFilterBtn" class="btn btn-success">Apply Filters</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content-area">
+        <div class="container">
+            <h1 class="heading">Dashboard</h1>
+            <button id="toggleFilter" class="btn btn-primary mb-3">Toggle Filters</button>
+
+            <div class="sort-dropdown">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sort Resumes
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li><a class="dropdown-item" href="#" id="sortExperienceHL">Experience: Highest to Lowest</a></li>
+                        <li><a class="dropdown-item" href="#" id="sortExperienceLH">Experience: Lowest to Highest</a></li>
+                        <li><a class="dropdown-item" href="#" id="sortDateNew">Upload Date: Newest to Oldest</a></li>
+                        <li><a class="dropdown-item" href="#" id="sortDateOld">Upload Date: Oldest to Newest</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Resumes -->
+            <div id="resumeCardsContainer" class="row mt-4">
+                {% for resume in resumes %}
+                <div class="col-md-4">
+                    <div class="resume-card">
+                        <div class="resume-header">
+                            <h3>{{ resume.personal_details.name }}</h3>
+                            <div class="resume-icons">
+                                <a href="/uploads/{{ resume.filename }}" download>
+                                    <i class="fas fa-file-pdf icon" title="Download Resume"></i>
+                                </a>
+                                <button class="btn btn-info icon" data-bs-toggle="modal" data-bs-target="#summaryModal"
+                                    onclick="showSummary('{{ resume.personal_details.name|escapejs }}', '{{ resume.skills|escapejs }}', '{{ resume.education|escapejs }}', '{{ resume.work_experience|escapejs }}')">
+                                    <i class="fas fa-info-circle icon" title="View Summary"></i>
+                                </button>
+
+                            </div>
+                            
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col">
+                                <strong>Experience:</strong> {{ resume.years_of_experience }} years
+                            </div>
+                            <div class="col">
+                                <strong>Upload Date:</strong>  {{ resume.uploaded_date }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const toggleFilterBtn = document.getElementById('toggleFilter');
+    const filterSidebar = document.getElementById('filterSidebar');
+    const closeFilterBtn = document.getElementById('closeFilter');
+    const applyFilterBtn = document.getElementById('applyFilterBtn');
+
+    toggleFilterBtn.addEventListener('click', () => {
+        filterSidebar.classList.toggle('show');
+    });
+
+    closeFilterBtn.addEventListener('click', () => {
+        filterSidebar.classList.remove('show');
+    });
+
+    applyFilterBtn.addEventListener('click', () => {
+        const roleFilter = document.getElementById('roleFilter').value;
+        const experienceFilter = document.getElementById('experienceFilter').value;
+        const skillsFilter = document.getElementById('skillsFilter').value;
+        const educationFilter = document.getElementById('educationFilter').value;
+        const industryFilter = document.getElementById('industryFilter').value;
+        const employmentFilter = document.getElementById('employmentFilter').value;
+        const locationFilter = document.getElementById('locationFilter').value;
+
+        console.log('Filters Applied:');
+        console.log('Role: ', roleFilter);
+        console.log('Experience Level: ', experienceFilter);
+        console.log('Skills: ', skillsFilter);
+        console.log('Education: ', educationFilter);
+        console.log('Industry: ', industryFilter);
+        console.log('Employment Type: ', employmentFilter);
+        console.log('Location: ', locationFilter);
+    });
+
+    const resumeCardsContainer = document.getElementById('resumeCardsContainer');
+
+    function sortResumes(criteria, order) {
+        const resumeCards = Array.from(resumeCardsContainer.getElementsByClassName('resume-card'));
+
+        resumeCards.sort((a, b) => {
+            let valueA, valueB;
+
+            if (criteria === 'experience') {
+                valueA = parseInt(a.querySelector('.row .col:nth-child(1)').textContent.replace(/\D/g, ''), 10);
+                valueB = parseInt(b.querySelector('.row .col:nth-child(1)').textContent.replace(/\D/g, ''), 10);
+            } else if (criteria === 'uploadDate') {
+                valueA = new Date(a.querySelector('.row .col:nth-child(2)').textContent.replace('Upload Date: ', '').trim());
+                valueB = new Date(b.querySelector('.row .col:nth-child(2)').textContent.replace('Upload Date: ', '').trim());
+            }
+
+            return order === 'asc' ? valueA - valueB : valueB - valueA;
+        });
+
+        resumeCards.forEach(card => resumeCardsContainer.appendChild(card));
+    }
+
+    document.getElementById('sortExperienceHL').addEventListener('click', () => {
+        sortResumes('experience', 'desc');
+    });
+
+    document.getElementById('sortExperienceLH').addEventListener('click', () => {
+        sortResumes('experience', 'asc');
+    });
+
+    document.getElementById('sortDateNew').addEventListener('click', () => {
+        sortResumes('uploadDate', 'desc');
+    });
+
+    document.getElementById('sortDateOld').addEventListener('click', () => {
+        sortResumes('uploadDate', 'asc');
+    });
+
+    function showSummary(name, skills, education, workExperience) {
+    const skillsList = skills.split(',').map(skill => `<li>${skill}</li>`).join('');
+    const workExperienceList = workExperience.split(',').map(experience => `<li>${experience}</li>`).join('');
+
+    const modalContent = `
+        <h4>Name: ${name}</h4>
+        <h5>Skills:</h5>
+        <ul>${skillsList}</ul>
+        <h5>Education:</h5>
+        <p>${education}</p>
+        <h5>Work Experience:</h5>
+        <ul>${workExperienceList}</ul>
+    `;
+
+    document.getElementById('resumeSummaryContent').innerHTML = modalContent;
+}
+    
+</script>
+<!-- Modal for displaying resume summary -->
+<div class="modal fade" id="summaryModal" tabindex="-1" aria-labelledby="summaryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="summaryModalLabel">Resume Summary</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="resumeSummaryContent">
+            <!-- Content will be dynamically inserted here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        /* CSS for User Dashboard */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .job-role-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+
+        .job-role-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 200px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .job-role-card h3 {
+            margin: 0;
+        }
+
+        .info-icon {
+            font-size: 24px;
+            color: #007BFF;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+        button {
+            display: block;
+            margin: 30px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard</h1>
+
+    <!-- Job Role Cards with Info Icons -->
+    <div class="job-role-container">
+        <div class="job-role-card">
+            <h3>Job Role 1</h3>
+            <span class="info-icon" onclick="openSummaryPage('Job Role 1')">ℹ️</span>
+        </div>
+        <div class="job-role-card">
+            <h3>Job Role 2</h3>
+            <span class="info-icon" onclick="openSummaryPage('Job Role 2')">ℹ️</span>
+        </div>
+        <div class="job-role-card">
+            <h3>Job Role 3</h3>
+            <span class="info-icon" onclick="openSummaryPage('Job Role 3')">ℹ️</span>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button onclick="submitChanges()">Submit</button>
+
+    <script>
+        // Redirect to Summary Page with Job Role
+        function openSummaryPage(jobRole) {
+            // Pass job role data as query parameter
+            window.location.href = `summary.html?jobRole=${encodeURIComponent(jobRole)}`;
+        }
+
+        // Submit changes and redirect to Submitted Successfully Page
+        function submitChanges() {
+            // Here you would make an API call to save changes in the database.
+            // For now, just simulate the process.
+
+            // Redirect to Submitted Successfully page
+            window.location.href = "submitted_succesfully.html";
+        }
+    </script>
+</body>
+</html>
