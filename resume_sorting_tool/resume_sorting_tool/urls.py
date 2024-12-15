@@ -29,5 +29,6 @@ urlpatterns = [
     path('login/',views.LoginPage,name='login'),
     path('home/',views.HomePage,name='home'),
     path('logout/',views.LogoutPage,name='logout'),
+    path('update_resume/<resume_id>/', views.update_resume, name='update_resume'),
 ]+ static('/uploads/', document_root=settings.MEDIA_ROOT)
 

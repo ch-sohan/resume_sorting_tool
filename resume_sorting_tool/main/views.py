@@ -15,6 +15,56 @@ from django.shortcuts import render,HttpResponse,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
+import json
+from bson import ObjectId
+
+
+
+@csrf_exempt
+def update_resume(request, resume_id):
+    if request.method == 'POST':
+        try:
+            # Parse the data from the request
+            data = json.loads(request.body)
+            print(data)
+            updated_name = data.get('name')
+            updated_skills = data.get('skills')
+            updated_education = data.get('education')
+            updated_work_experience = data.get('workExperience')
+            print(resume_id)
+            
+
+            # Find the resume by ID (or another unique field like filename)
+            resume = collection.find_one({"id": resume_id})
+
+            if resume:
+                # Update the fields
+                collection.update_one(
+                    {"id": resume_id},
+                    {
+                        "$set": {
+                            "personal_details.name": updated_name,
+                            "skills": updated_skills.split(','),
+                            "education": updated_education,
+                            "work_experience": updated_work_experience.split(',')
+                        }
+                    }
+                )
+
+                return JsonResponse({'success': True})
+
+            else:
+                return JsonResponse({'success': False, 'error': 'Resume not found'})
+
+        except Exception as e:
+            print(str(e)+"****")
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Invalid method'})
+
 
 # Create your views here.
 @login_required(login_url='login')
@@ -126,7 +176,8 @@ def process_resume(request):
     if request.method == 'POST':
         job_role = request.POST.get('jobRole')
         file = request.FILES.get('resume')
-        save_path = os.path.join('uploads', file.name)
+        save_path = os.path.join('uploads', job_role+"_"+request.user.username+"_"+file.name)
+        file.name = job_role+"_"+request.user.username+"_"+file.name
         with open(save_path, 'wb') as f:
             for chunk in file.chunks():
                 f.write(chunk)
@@ -136,13 +187,15 @@ def process_resume(request):
             resume_text = parse_resume(save_path)
             extracted_data = extract_info(resume_text)
             structured_data = call_gemini_api(resume_text)
+            resume_id = str(ObjectId())  # Generate a new ObjectId for this resume
+            structured_data['id'] = resume_id 
             structured_data['jobRole'] = job_role
             structured_data['filename'] = file.name
             structured_data['username'] = request.user.username
 
             # Save to MongoDB
             collection.insert_one(structured_data)
-            return JsonResponse({'message': 'Resume processed successfully!', 'data': structured_data})
+            return redirect('home') 
 
         except Exception as e:
             return JsonResponse({'message': 'Resume processing failed.', 'error': str(e)})
@@ -162,7 +215,7 @@ def call_gemini_api(resume_text):
     - Certifications
     - Number of Years of Experience
 
-    (Note:  Please give me response in plain text and list all the skills seperated by commas No sub categories are needed in Skills)
+    (Note:  Please give me response in plain text and list all the skills seperated by commas No sub categories are needed in Skills and for the number of years of experience only give the number of years don't give any other content on your own)
     Resume Text:
     {resume_text}
 
@@ -208,7 +261,7 @@ def admin_dashboard(request):
     total_experience = 0
     for resume in resumes:
         years_of_experience = resume.get('years_of_experience', '')
-        total_experience += int(years_of_experience)  # Assuming each experience is 1 year
+        #total_experience += int(years_of_experience)  # Assuming each experience is 1 year
 
     avg_experience = total_experience / total_resumes if total_resumes else 0
 
