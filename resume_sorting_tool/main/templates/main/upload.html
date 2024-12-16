@@ -154,6 +154,16 @@
                     <option value="uiUxDesigner">UI/UX Designer</option>
                 </select>
             </div>
+            <div class="mb-3">
+                <label for="employmentType" class="form-label">What employment type are you looking for?</label>
+                <select class="form-select" id="employmentType" name="employmentType" required>
+                    <option value="fullTime">Full-time</option>
+                    <option value="partTime">Part-time</option>
+                    <option value="freelancer">Freelancer</option>
+                    <option value="contract">Contract</option>
+                    <option value="internship">Internship</option>
+                </select>
+            </div>
             {% csrf_token %}
             <!-- Resume File Upload -->
             <div class="mb-3">

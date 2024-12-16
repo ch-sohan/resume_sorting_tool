@@ -1,6 +1,7 @@
 from django.shortcuts import render
 import os
 import re
+import ast
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from pymongo import MongoClient
@@ -176,6 +177,7 @@ def process_resume(request):
     if request.method == 'POST':
         job_role = request.POST.get('jobRole')
         file = request.FILES.get('resume')
+        employment_type = request.POST.get('employmentType')
         save_path = os.path.join('uploads', job_role+"_"+request.user.username+"_"+file.name)
         file.name = job_role+"_"+request.user.username+"_"+file.name
         with open(save_path, 'wb') as f:
@@ -190,6 +192,7 @@ def process_resume(request):
             resume_id = str(ObjectId())  # Generate a new ObjectId for this resume
             structured_data['id'] = resume_id 
             structured_data['jobRole'] = job_role
+            structured_data['employmentType'] =  employment_type
             structured_data['filename'] = file.name
             structured_data['username'] = request.user.username
 
@@ -243,6 +246,10 @@ def upload_resume(request):
 
 # Admin Dashboard
 def admin_dashboard(request):
+    # Check if the logged-in user is a superuser and their username is "sohan"
+    if not request.user.is_superuser or request.user.username != 'sohan':
+        return redirect('home')  # Redirect to home page if not superuser or not 'sohan'
+
     resumes = list(collection.find())
     total_resumes = len(resumes)
 
@@ -355,3 +362,77 @@ def updated_parse_response(response_text):
     
     return data
 
+def apply_filters(request):
+    if request.method == 'POST':
+        # Get filter values from the request
+        filters = json.loads(request.body)
+        print("Hellooooooooooo")
+        try:
+            # Fetch all resumes from the database
+            all_resumes = list(collection.find())
+
+            # Convert resumes to a format suitable for the Gemini model
+            resumes_data = []
+            for resume in all_resumes:
+                resume_data = {
+                    'name': resume.get('personal_details', {}).get('name', ''),
+                    'email': resume.get('personal_details', {}).get('email', ''),
+                    'phone': resume.get('personal_details', {}).get('phone', ''),
+                    'address': resume.get('personal_details', {}).get('address', ''),
+                    'skills': ', '.join(resume.get('skills', [])),
+                    'education': resume.get('education', ''),
+                    'work_experience': ', '.join(resume.get('work_experience', [])),
+                    'certifications': ', '.join(resume.get('certifications', [])),
+                    'years_of_experience': resume.get('years_of_experience', ''),
+                    'id':resume.get('id',''),
+                }
+                resumes_data.append(resume_data)
+
+            # Prepare the prompt for Gemini API
+            prompt = generate_prompt(filters, resumes_data)
+            print(prompt)
+            # Call the Gemini API to get the filtered resume IDs
+            genai.configure(api_key="AIzaSyDlbljcxkhd1ZSFyF10ceVHnEiBcrL19t0")
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            response = model.generate_content(prompt)
+
+            # Parse the response (assuming the response contains the structured data)
+            response_text = response.text.strip()
+            print(response_text)
+
+            # Assuming response contains a list of resume IDs
+            resume_ids = parse_response_for_ids(response)
+            print(resume_ids)
+
+            # Send the filtered resume IDs back to the frontend
+            return JsonResponse({'success': True, 'resumeIds': resume_ids})
+
+        except Exception as e:
+            print(f"Error in filtering process: {e}")
+            return JsonResponse({'success': False, 'message': 'Error processing filters'})
+
+def generate_prompt(filters, resumes_data):
+    # Convert resumes_data to string format for the prompt
+    resumes_str = "\n".join([f"Resume: {resume}" for resume in resumes_data])
+
+    # Generate a prompt based on the filters and resumes
+    return f"""
+    Given the following filters:
+    - Role: {filters['role']}
+    - Experience Level: {filters['experience']}
+    - Skills: {filters['skills']}
+    - Education: {filters['education']}
+    - Industry: {filters['industry']}
+    - Employment Type: {filters['employment']}
+    - Job Description: {filters['jobDescription']}
+
+    And the following resumes:
+    {resumes_str}
+
+    Provide me with a list of resume IDs that satisfy these filters.
+    (Note: Strictly give me list of resume Ids in the following format I don't want anything else)
+    ['id1','id2','id3',....'idn']
+    """
+
+def parse_response_for_ids(response):
+    return ast.literal_eval(response.text.strip()) 

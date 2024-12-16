@@ -47,6 +47,7 @@
         }
 
         /* Content Area */
+
         .content-area {
             margin-left: 280px;
         }
@@ -83,6 +84,18 @@
             border: none;
         }
 
+        /* If you're using flex or grid, ensure that the cards don't leave gaps when hidden */
+#resumeCardsContainer {
+    display: flex; /* or 'grid', depending on your layout */
+    flex-wrap: wrap; /* if using flex */
+}
+
+.col-md-4 {
+    display: block; /* Ensure the column is treated as a block-level element */
+    width: 100%; /* Adjust the width if necessary */
+}
+
+
         /* Optionally, remove the outline (focus ring) when focused */
         .resume-icons .btn:focus {
             outline: none;
@@ -112,20 +125,25 @@
         <h5>Filters</h5>
         <button id="closeFilter" class="btn btn-sm btn-danger mb-3">Close Filters</button>
         <!-- Filters -->
-        <form>
+        <form method="POST" >
+            {% csrf_token %}
+            <!-- Job Description Filter (Text Box) -->
+            <div class="filter-category">
+                <label for="jobDescriptionFilter" class="form-label">Job Description</label>
+                <textarea class="form-control" id="jobDescriptionFilter" rows="4" placeholder="Enter job description..."></textarea>
+            </div>
             <!-- Job Role Filter -->
             <div class="filter-category">
                 <label for="roleFilter" class="form-label">Job Role</label>
                 <select class="form-select" id="roleFilter">
-                    <option>Software Development</option>
-                    <option>Systems and Network</option>
-                    <option>Data</option>
-                    <option>AI/ML and Data Science</option>
+                    <option>Software Developer</option>
+                    <option>Data Scientist</option>
+                    <option>AI/ML Engineer</option>
                     <option>Cybersecurity</option>
                     <option>Quality Assurance</option>
-                    <option>DevOps and Infrastructure</option>
-                    <option>Project Management</option>
-                    <option>UI/UX and Design</option>
+                    <option>DevOps</option>
+                    <option>Project Manager</option>
+                    <option>UI/UX Designer</option>
                 </select>
             </div>
 
@@ -188,19 +206,12 @@
                 <select class="form-select" id="employmentFilter">
                     <option>Full-time</option>
                     <option>Part-time</option>
-                    <option>Freelance/Contract</option>
+                    <option>Freelance</option>
+                    <option>Contract</option>
                     <option>Internship</option>
                 </select>
             </div>
 
-            <!-- Geographic Location Filter -->
-            <div class="filter-category">
-                <label for="locationFilter" class="form-label">Geographic Location</label>
-                <select class="form-select" id="locationFilter">
-                    <option>Location Preferences</option>
-                    <option>Availability</option>
-                </select>
-            </div>
 
             <!-- Apply Filter Button -->
             <div class="mt-3">
@@ -232,7 +243,7 @@
             <!-- Resumes -->
             <div id="resumeCardsContainer" class="row mt-4">
                 {% for resume in resumes %}
-                <div class="col-md-4">
+                <div class="col-md-4" id="resume-card-{{ resume.id }}">
                     <div class="resume-card">
                         <div class="resume-header">
                             <h3>{{ resume.personal_details.name }}</h3>
@@ -241,7 +252,7 @@
                                     <i class="fas fa-file-pdf icon" title="Download Resume"></i>
                                 </a>
                                 <button class="btn btn-info icon" data-bs-toggle="modal" data-bs-target="#summaryModal"
-                                    onclick="showSummary('{{ resume.personal_details.name|escapejs }}', '{{ resume.skills|escapejs }}', '{{ resume.education|escapejs }}', '{{ resume.work_experience|escapejs }}')">
+                                onclick="showSummary('{{ resume.personal_details.name|escapejs }}', '{{ resume.skills|escapejs }}', '{{ resume.education|escapejs }}', '{{ resume.work_experience|escapejs }}', '{{ resume.id|escapejs }}', '{{ resume.certifications|escapejs }}', '{{ resume.personal_details.email|escapejs }}', '{{ resume.years_of_experience|escapejs }}')">
                                     <i class="fas fa-info-circle icon" title="View Summary"></i>
                                 </button>
 
@@ -285,7 +296,7 @@
         const educationFilter = document.getElementById('educationFilter').value;
         const industryFilter = document.getElementById('industryFilter').value;
         const employmentFilter = document.getElementById('employmentFilter').value;
-        const locationFilter = document.getElementById('locationFilter').value;
+        const jobDescriptionFilter = document.getElementById('jobDescriptionFilter').value; // Get the job description filter
 
         console.log('Filters Applied:');
         console.log('Role: ', roleFilter);
@@ -294,7 +305,46 @@
         console.log('Education: ', educationFilter);
         console.log('Industry: ', industryFilter);
         console.log('Employment Type: ', employmentFilter);
-        console.log('Location: ', locationFilter);
+        console.log('Job Description: ', jobDescriptionFilter);
+
+        // Prepare the data to send
+    const filterData = {
+        role: roleFilter,
+        experience: experienceFilter,
+        skills: skillsFilter,
+        education: educationFilter,
+        industry: industryFilter,
+        employment: employmentFilter,
+        jobDescription: jobDescriptionFilter
+    };
+
+    // Send the data to the backend using fetch (or AJAX)
+    fetch('/apply_filters', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,  // Django CSRF token
+        },
+        body: JSON.stringify(filterData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        //console.log(data)
+        if(data.success){
+            // Handle the response (update UI based on filtered resume IDs)
+        console.log('Filtered Resumes:', data.resumeIds);
+        // You can now update the UI with the filtered resume IDs
+        updateResumeCards(data.resumeIds);
+
+        } else {
+            alert('Error filtering sohan');
+        }
+        
+    })
+    .catch(error => {
+        console.error('Error applying filters:', error);
+    });
+
     });
 
     const resumeCardsContainer = document.getElementById('resumeCardsContainer');
@@ -335,22 +385,103 @@
         sortResumes('uploadDate', 'asc');
     });
 
-    function showSummary(name, skills, education, workExperience) {
-    const skillsList = skills.split(',').map(skill => `<li>${skill}</li>`).join('');
-    const workExperienceList = workExperience.split(',').map(experience => `<li>${experience}</li>`).join('');
+    function showSummary(name, skills, education, workExperience, id, certifications, email, yearsOfExperience) {
+            currentResume = { name, skills, education, workExperience, id, certifications, email, yearsOfExperience };
 
-    const modalContent = `
-        <h4>Name: ${name}</h4>
-        <h5>Skills:</h5>
-        <ul>${skillsList}</ul>
-        <h5>Education:</h5>
-        <p>${education}</p>
-        <h5>Work Experience:</h5>
-        <ul>${workExperienceList}</ul>
-    `;
 
-    document.getElementById('resumeSummaryContent').innerHTML = modalContent;
+            // Check if the skills data is passed as a string that looks like an array
+            if (typeof skills === 'string') {
+                try {
+                    // Replace single quotes with double quotes to make it valid JSON
+                    skills = skills.replace(/'/g, '"');
+                    // Try parsing the fixed string
+                    skills = JSON.parse(skills);
+                } catch (e) {
+                    console.error("Error parsing skills array:", e);
+                    skills = []; // In case of any errors, fallback to an empty array
+                }
+            }
+
+            if (typeof workExperience === 'string') {
+                try {
+                    workExperience = workExperience.replace(/'/g, '"');  // Fix the string format
+                    workExperience = JSON.parse(workExperience);  // Try parsing the string into an array
+                } catch (e) {
+                    console.error("Error parsing work experience array:", e);
+                    workExperience = [];  // Fallback to an empty array
+                }
+            }
+
+            // Ensure skills is now an array
+            let skillsList = '';
+            if (Array.isArray(skills)) {
+                skillsList = skills.map(skill => `<li>${skill}</li>`).join('');
+            } else {
+                skillsList = '<li>No skills available</li>';
+            }
+
+            let workExperienceList = '';
+            if (Array.isArray(workExperience)) {
+                workExperienceList = workExperience.map(experience => `<li>${experience}</li>`).join('');
+            } else {
+                workExperienceList = '<li>No work experience available</li>';
+            }
+            const modalContent = `
+                <h4>Name: ${name}</h4>
+                <h5>Email:</h5>
+                <p>${email}</p>
+                <h5>Skills:</h5>
+                <ul>${skillsList}</ul>
+                <h5>Education:</h5>
+                <p>${education}</p>
+                <h5>Work Experience:</h5>
+                <ul>${workExperienceList}</ul>
+                <h5>Years of Experience:</h5>
+                <p>${yearsOfExperience}</p>
+            `;
+
+            document.getElementById('resumeSummaryContent').innerHTML = modalContent;
+        }
+
+function updateResumeCars(filteredIds) {
+    const allResumeCards = Array.from(document.querySelectorAll('.resume-card'));
+    
+    // Hide all cards initially
+    allResumeCards.forEach(card => card.style.display = 'none');
+    
+    // Show only the filtered cards
+    filteredIds.forEach(id => {
+        console.log("INNNNNN")
+        console.log(id)
+        var card = document.getElementById(`resume-card-${id}`);
+        console.log(card)
+        if (card) {
+            card.style.display = 'block';
+            console.log(card)
+        }
+        var resumeCard = document.querySelector(`#resume-card-${id} .resume-card`);
+        resumeCard.style.display = 'block';
+    });
 }
+
+function updateResumeCards(filteredIds) {
+    const allResumeCards = Array.from(document.querySelectorAll('.resume-card'));
+    
+    // Hide all cards initially by hiding their parent container
+    allResumeCards.forEach(card => {
+        card.closest('.col-md-4').style.display = 'none'; // Hide the parent column
+    });
+    
+    // Show only the filtered cards
+    filteredIds.forEach(id => {
+        const card = document.querySelector(`#resume-card-${id}`);
+        if (card) {
+            card.style.display = 'block'; // Make it visible
+        }
+    });
+}
+
+
     
 </script>
 <!-- Modal for displaying resume summary -->
