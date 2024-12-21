@@ -31,5 +31,6 @@ urlpatterns = [
     path('logout/',views.LogoutPage,name='logout'),
     path('update_resume/<resume_id>/', views.update_resume, name='update_resume'),
     path('apply_filters', views.apply_filters, name='apply_filters'),
+    path('apply_category_filters', views.apply_category_filters, name='apply_category_filters'),
 ]+ static('/uploads/', document_root=settings.MEDIA_ROOT)
 

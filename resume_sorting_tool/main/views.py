@@ -206,7 +206,7 @@ def process_resume(request):
 
 def call_gemini_api(resume_text):
 
-    genai.configure(api_key="AIzaSyDlbljcxkhd1ZSFyF10ceVHnEiBcrL19t0")
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
     # Define the prompt to send to the Gemini model for categorizing the resume
     prompt = f"""
@@ -369,7 +369,18 @@ def apply_filters(request):
         print("Hellooooooooooo")
         try:
             # Fetch all resumes from the database
-            all_resumes = list(collection.find())
+            query = {}
+
+            # Add filters to the query only if they have valid values
+            if filters['role'] != "--":
+                query["jobRole"] = filters['role']
+            
+            if filters['employment'] != "--":
+                query["employmentType"] = filters['employment']
+
+            # Fetch resumes from the database with the dynamic query
+            all_resumes = list(collection.find(query))
+            
 
             # Convert resumes to a format suitable for the Gemini model
             resumes_data = []
@@ -380,11 +391,17 @@ def apply_filters(request):
                     'phone': resume.get('personal_details', {}).get('phone', ''),
                     'address': resume.get('personal_details', {}).get('address', ''),
                     'skills': ', '.join(resume.get('skills', [])),
+                    'jobRole': resume.get('jobRole', ''),
                     'education': resume.get('education', ''),
                     'work_experience': ', '.join(resume.get('work_experience', [])),
                     'certifications': ', '.join(resume.get('certifications', [])),
                     'years_of_experience': resume.get('years_of_experience', ''),
                     'id':resume.get('id',''),
+                    'employmentType': resume.get('employmentType', ''),
+                    'uploaded_date': resume.get('uploaded_date',''),
+                    'username': resume.get('username',''),
+
+
                 }
                 resumes_data.append(resume_data)
 
@@ -392,7 +409,7 @@ def apply_filters(request):
             prompt = generate_prompt(filters, resumes_data)
             print(prompt)
             # Call the Gemini API to get the filtered resume IDs
-            genai.configure(api_key="AIzaSyDlbljcxkhd1ZSFyF10ceVHnEiBcrL19t0")
+            genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
             model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
 
@@ -418,7 +435,7 @@ def generate_prompt(filters, resumes_data):
     # Generate a prompt based on the filters and resumes
     return f"""
     Given the following filters:
-    - Role: {filters['role']}
+    - Job Role: {filters['role']}
     - Experience Level: {filters['experience']}
     - Skills: {filters['skills']}
     - Education: {filters['education']}
@@ -429,10 +446,89 @@ def generate_prompt(filters, resumes_data):
     And the following resumes:
     {resumes_str}
 
-    Provide me with a list of resume IDs that satisfy these filters.
-    (Note: Strictly give me list of resume Ids in the following format I don't want anything else)
+    Provide me with a list of resume IDs that satisfy all the these filters.
+    I don't want you to give me resumeids which partially satisfy the filters
+    (Note: Strictly give me list of resume Ids in the following format I don't want anything else and perform filtering strictly based on labels)
+    Entry level means having 0-3 years of experience, Mid Level means 3-8 years of experience and Senior level means >8 years of experience
     ['id1','id2','id3',....'idn']
     """
 
 def parse_response_for_ids(response):
     return ast.literal_eval(response.text.strip()) 
+
+def apply_category_filters(request):
+    if request.method == 'POST':
+        # Get filter values from the request
+        filters = json.loads(request.body)
+        print("Heyyyy")
+        try:
+            # Fetch all resumes from the database
+            query = {}
+
+            
+            # Fetch resumes from the database with the dynamic query
+            all_resumes = list(collection.find(query))
+            
+
+            # Convert resumes to a format suitable for the Gemini model
+            resumes_data = []
+            for resume in all_resumes:
+                resume_data = {
+                    'name': resume.get('personal_details', {}).get('name', ''),
+                    'email': resume.get('personal_details', {}).get('email', ''),
+                    'phone': resume.get('personal_details', {}).get('phone', ''),
+                    'address': resume.get('personal_details', {}).get('address', ''),
+                    'skills': ', '.join(resume.get('skills', [])),
+                    'jobRole': resume.get('jobRole', ''),
+                    'education': resume.get('education', ''),
+                    'work_experience': ', '.join(resume.get('work_experience', [])),
+                    'certifications': ', '.join(resume.get('certifications', [])),
+                    'years_of_experience': resume.get('years_of_experience', ''),
+                    'id':resume.get('id',''),
+                    'employmentType': resume.get('employmentType', ''),
+                    'uploaded_date': resume.get('uploaded_date',''),
+                    'username': resume.get('username',''),
+
+                }
+                resumes_data.append(resume_data)
+
+            # Prepare the prompt for Gemini API
+            prompt = generate_category_prompt(filters, resumes_data)
+            print(prompt)
+            # Call the Gemini API to get the filtered resume IDs
+            genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            response = model.generate_content(prompt)
+
+            # Parse the response (assuming the response contains the structured data)
+            response_text = response.text.strip()
+            print(response_text)
+
+            # Assuming response contains a list of resume IDs
+            resume_ids = parse_response_for_ids(response)
+            print(resume_ids)
+
+            # Send the filtered resume IDs back to the frontend
+            return JsonResponse({'success': True, 'resumeIds': resume_ids})
+
+        except Exception as e:
+            print(f"Error in filtering process: {e}")
+            return JsonResponse({'success': False, 'message': 'Error processing filters'})
+        
+def generate_category_prompt(filters,resumes_data):
+    resumes_str = "\n".join([f"Resume: {resume}" for resume in resumes_data])
+
+    # Generate a prompt based on the filters and resumes
+    return f"""
+    {resumes_str}
+    From the above resumes which resumes belong to {filters['category']} category?
+
+    Provide me only th list of resumeIDs that satisfy the above mentioned category
+    (Note: Strictly give me list of resume Ids in the following format I don't want anything else and perform filtering strictly based on labels)
+    Entry level means having 0-3 years of experience, Mid Level means 3-8 years of experience and Senior level means >8 years of experience
+    ['id1','id2','id3',....'idn']
+    """
+
+
+
+

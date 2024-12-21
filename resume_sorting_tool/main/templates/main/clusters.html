@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Clusters</title>
+  <style>
+    /* Basic Styling */
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .tabs {
+      display: flex;
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      border-bottom: 2px solid #ccc;
+    }
+    .tabs li {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-bottom: none;
+      background-color: #f9f9f9;
+    }
+    .tabs li.active {
+      background-color: #fff;
+      font-weight: bold;
+      border-top: 2px solid #007BFF;
+    }
+    .content {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: -1px;
+      display: none; /* Initially hide all content */
+    }
+    .content.active {
+      display: block; /* Show content for the active tab */
+    }
+  </style>
+</head>
+<body>
+  <h1>Resume Clusters</h1>
+  <ul class="tabs" id="tabs"></ul>
+  <div id="content"></div>
+
+  <script>
+    // Example: Data fetched from the backend
+    const clusters = [
+      {
+        name: "Data Scientists",
+        resumes: [
+          "Data scientist with Python expertise",
+          "ML engineer with deep learning experience"
+        ]
+      },
+      {
+        name: "Project Managers",
+        resumes: [
+          "Experienced project manager",
+          "Scrum master with Agile experience"
+        ]
+      },
+      {
+        name: "Frontend Developers",
+        resumes: [
+          "Frontend developer with React skills",
+          "UI/UX designer with Figma expertise"
+        ]
+      }
+    ];
+
+    // Dynamically render tabs and content
+    const tabsContainer = document.getElementById("tabs");
+    const contentContainer = document.getElementById("content");
+
+    clusters.forEach((cluster, index) => {
+      // Create tab
+      const tab = document.createElement("li");
+      tab.textContent = cluster.name;
+      tab.classList.add(index === 0 ? "active" : ""); // Mark the first tab as active
+
+      // Add click event to toggle active class
+      tab.onclick = () => {
+        // Toggle the active class on tabs
+        document.querySelectorAll(".tabs li").forEach((t, i) => {
+          t.classList.remove("active");  // First, remove the active class from all tabs
+        });
+        tab.classList.add("active");  // Add active class to the clicked tab
+        
+        // Toggle the active class on content divs
+        document.querySelectorAll(".content").forEach((c, i) => {
+          c.classList.remove("active");  // Remove active class from all content
+        });
+        contentContainer.children[index].classList.add("active");  // Show content corresponding to the clicked tab
+      };
+      tabsContainer.appendChild(tab);
+
+      // Create content for each cluster
+      const content = document.createElement("div");
+      content.classList.add("content");
+      const resumeList = document.createElement("ul");
+      cluster.resumes.forEach(resume => {
+        const li = document.createElement("li");
+        li.textContent = resume;
+        resumeList.appendChild(li);
+      });
+      content.appendChild(resumeList);
+      contentContainer.appendChild(content);
+    });
+
+    // Initialize the first tab and content as active
+    document.querySelector(".tabs li").classList.add("active");
+    document.querySelector(".content").classList.add("active");
+  </script>
+</body>
+</html>

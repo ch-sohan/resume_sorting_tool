@@ -136,14 +136,15 @@
             <div class="filter-category">
                 <label for="roleFilter" class="form-label">Job Role</label>
                 <select class="form-select" id="roleFilter">
-                    <option>Software Developer</option>
-                    <option>Data Scientist</option>
-                    <option>AI/ML Engineer</option>
-                    <option>Cybersecurity</option>
-                    <option>Quality Assurance</option>
-                    <option>DevOps</option>
-                    <option>Project Manager</option>
-                    <option>UI/UX Designer</option>
+                    <option>--</option>
+                    <option value="softwareDeveloper">Software Developer</option>
+                    <option value="dataScientist">Data Scientist</option>
+                    <option value="aiEngineer">AI/ML Engineer</option>
+                    <option value="cyberSecurity">Cybersecurity</option>
+                    <option value="qualityAssurance">Quality Assurance</option>
+                    <option value="devOps">DevOps</option>
+                    <option value="projectManager">Project Manager</option>
+                    <option value="uiUxDesigner">UI/UX Designer</option>
                 </select>
             </div>
 
@@ -151,6 +152,7 @@
             <div class="filter-category">
                 <label for="experienceFilter" class="form-label">Experience Level</label>
                 <select class="form-select" id="experienceFilter">
+                    <option>--</option>
                     <option>Entry-Level</option>
                     <option>Mid-Level</option>
                     <option>Senior-Level</option>
@@ -162,9 +164,10 @@
             <div class="filter-category">
                 <label for="skillsFilter" class="form-label">Technical Skills</label>
                 <select class="form-select" id="skillsFilter">
+                    <option>--</option>
                     <option>Programming Languages</option>
                     <option>Web Technologies</option>
-                    <option>Mobile Development</option>
+                    <option>Android Development</option>
                     <option>Database Technologies</option>
                     <option>Cloud Computing</option>
                     <option>DevOps Tools</option>
@@ -179,6 +182,7 @@
             <div class="filter-category">
                 <label for="educationFilter" class="form-label">Education</label>
                 <select class="form-select" id="educationFilter">
+                    <option>--</option>
                     <option>Degree</option>
                     <option>Field of Study</option>
                     <option>Certifications</option>
@@ -189,6 +193,7 @@
             <div class="filter-category">
                 <label for="industryFilter" class="form-label">Industry Domain Expertise</label>
                 <select class="form-select" id="industryFilter">
+                    <option>--</option>
                     <option>Software Development</option>
                     <option>Cloud Computing</option>
                     <option>Cybersecurity</option>
@@ -204,11 +209,10 @@
             <div class="filter-category">
                 <label for="employmentFilter" class="form-label">Employment Type</label>
                 <select class="form-select" id="employmentFilter">
-                    <option>Full-time</option>
-                    <option>Part-time</option>
-                    <option>Freelance</option>
-                    <option>Contract</option>
-                    <option>Internship</option>
+                    <option>--</option>
+                    <option value="fullTime">Full-time</option>
+                    <option value="partTime">Part-time</option>
+                    <option value="internship">Internship</option>
                 </select>
             </div>
 
@@ -225,6 +229,15 @@
         <div class="container">
             <h1 class="heading">Dashboard</h1>
             <button id="toggleFilter" class="btn btn-primary mb-3">Toggle Filters</button>
+
+            <!-- Filter Buttons -->
+        <div id="buttons" class="mb-3">
+            <button class="btn btn-outline-primary" onclick="location.reload();">All</button>
+            <button class="btn btn-outline-primary" onclick="filterResumes('Same Organization')">Same Organization</button>
+            <button class="btn btn-outline-primary" onclick="filterResumes('Same Educational Level')">Same Educational level</button>
+            <button class="btn btn-outline-primary" onclick="filterResumes('Same Skills')">Same Skills</button>
+            
+        </div>
 
             <div class="sort-dropdown">
                 <div class="dropdown">
@@ -385,6 +398,41 @@
         sortResumes('uploadDate', 'asc');
     });
 
+    function filterResumes(category){
+        const categoryFilterData = {
+            'category':category,
+        };
+
+        // Send the data to the backend using fetch (or AJAX)
+    fetch('/apply_category_filters', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,  // Django CSRF token
+        },
+        body: JSON.stringify(categoryFilterData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        //console.log(data)
+        if(data.success){
+            // Handle the response (update UI based on filtered resume IDs)
+        console.log('Filtered Resumes:', data.resumeIds);
+        // You can now update the UI with the filtered resume IDs
+        updateResumeCards(data.resumeIds);
+
+        } else {
+            alert('Error filtering sohan');
+        }
+        
+    })
+    .catch(error => {
+        console.error('Error applying filters:', error);
+    });
+
+
+    }
+
     function showSummary(name, skills, education, workExperience, id, certifications, email, yearsOfExperience) {
             currentResume = { name, skills, education, workExperience, id, certifications, email, yearsOfExperience };
 
@@ -443,26 +491,6 @@
             document.getElementById('resumeSummaryContent').innerHTML = modalContent;
         }
 
-function updateResumeCars(filteredIds) {
-    const allResumeCards = Array.from(document.querySelectorAll('.resume-card'));
-    
-    // Hide all cards initially
-    allResumeCards.forEach(card => card.style.display = 'none');
-    
-    // Show only the filtered cards
-    filteredIds.forEach(id => {
-        console.log("INNNNNN")
-        console.log(id)
-        var card = document.getElementById(`resume-card-${id}`);
-        console.log(card)
-        if (card) {
-            card.style.display = 'block';
-            console.log(card)
-        }
-        var resumeCard = document.querySelector(`#resume-card-${id} .resume-card`);
-        resumeCard.style.display = 'block';
-    });
-}
 
 function updateResumeCards(filteredIds) {
     const allResumeCards = Array.from(document.querySelectorAll('.resume-card'));
